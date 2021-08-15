@@ -1,4 +1,4 @@
-package ChessNotationConverter;
+
 import javax.swing.*;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -40,7 +40,8 @@ public class GUI extends JFrame {
         pasteGame = new JLabel("Paste moves in short notation (eg. 1. e4 e5).");
         mode = new JComboBox<String>();
         mode.addItem("Long format");
-        
+        mode.addItem("Code string");
+        mode.addItem("Code string and board");
 
         c.gridx = 1; c.gridy = 0;
         c.ipady = 80; c.weightx = 1.5;
@@ -59,7 +60,7 @@ public class GUI extends JFrame {
         add(mode,c);
 
         c.gridy = 2;
-        //add(convert,c);
+        add(convert,c);
 
         setVisible(true);
         setSize(800,600);
