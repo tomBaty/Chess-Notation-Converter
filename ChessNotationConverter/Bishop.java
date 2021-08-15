@@ -1,19 +1,7 @@
-public class Bishop implements Piece{
-
-    private boolean white;
-    private Position pos;
-
-    public Position getPos() {
-        return pos;
-    }
-
-    public void setPos(Position pos) {
-        this.pos = pos;
-    }
+public class Bishop extends PieceImpl{
 
     public Bishop(boolean white,Position pos) {
-        this.white = white;
-        this.pos = pos;
+        super(white,pos);
     }
 
     @Override
@@ -22,14 +10,8 @@ public class Bishop implements Piece{
     }
 
     @Override
-    public boolean isWhite() {
-        return white;
-    }
-
-    @Override
     public boolean isValidMove(Position newPosition, Piece isTaken, Board board) {
-        // TODO Auto-generated method stub
-        return false;
+        return this.diagonal(newPosition);
     }
     
 }

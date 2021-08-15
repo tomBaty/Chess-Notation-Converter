@@ -3,21 +3,18 @@ import java.util.Scanner;
 public class Chess{
 
     static String turnCount = "\\d+\\.";
+    public static char[] columns = new char[]{'a','b','c','d','e','f','g','h'};
+    public static StringBuilder output = new StringBuilder();
 
-    public static boolean convert(String input) throws Exception{
+    public static int charToColumn(char c){
+        for(int i = 0; i < 8; i ++){
+            if(columns[i] == c) return i;
+        }
+        return -1;
+    }
+
+    public static void convert(String input) throws Exception{
         Scanner s = new Scanner(input);
-
-        String[][] turns = new String[100][2];
-        char[][] board = new char[][]{
-            {'R','N','B','Q','K','B','N','R'},
-            {'P','P','P','P','P','P','P','P'},
-            {'_','_','_','_','_','_','_','_'},
-            {'_','_','_','_','_','_','_','_'},
-            {'_','_','_','_','_','_','_','_'},
-            {'_','_','_','_','_','_','_','_'},
-            {'p','p','p','p','p','p','p','p'},
-            {'r','n','b','q','k','b','n','r'}
-        };
 
         /**
          * Example short notation game
@@ -41,25 +38,43 @@ public class Chess{
             String next = s.next();
             // turn each round into a pair of moves
             if(next.matches(turnCount)){
-                String[] turn = new String[2];
-                turn[0] = s.next();
-                turn[1] = s.next();
-                
+                output.append(parseMove(s.next()));
+                output.append(parseMove(s.next()));
+                output.append(" ");
             }else{
+                s.close();
                 throw new Exception("Bad input. Make sure to remove comments {} and brackets ().");
             }
         }
         s.close();
-        return true;
     }
 
     // convert short notation move to long
-    public static String parseMove(char[][] board,String move){
+    public static String parseMove(String move){
 
+        if(move.contains("x")){
+            System.out.println("take");
+        }else{
+            if(move.contains("+")){
+                System.out.println("check");
+            }
+            // pawn move
+            if(move.length()==2){
+                System.out.println("pawn move");
+            }else{
+                System.out.println("move");
+                String piece = move.substring(0,1);
+                Position newPos = new Position(move.charAt(2),charToColumn(move.charAt(1)));
+                for(PieceImpl p : Board.getPiece(piece)){
+                    System.out.println("found a piece");
+                    if(p.isValidMove(newPos, null, Board.board)){
+                        return piece+p.getStringPos()+"-"+newPos.getStringPos();
+                    }
+                }
+            }
+        }
 
-
-
-        return null;
+        return "";
     }
 
     public static void main(String args[]){

@@ -21,7 +21,8 @@ public class GUI extends JFrame {
         convert.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 try{
-                Chess.convert(input.getText());
+                    Chess.convert(input.getText());
+                    output.setText(Chess.output.toString());
                 }catch(Exception a){
                     input.setText(a.getMessage());
                 }

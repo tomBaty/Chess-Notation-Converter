@@ -1,10 +1,12 @@
 import java.util.Arrays;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class Board {
 
-    public static Piece[][] pieces = new Piece[9][9];
+    public static PieceImpl[][] pieces = new PieceImpl[9][9];
+    public static Board board;
 
     public Board(){
         // rooks
@@ -30,13 +32,26 @@ public class Board {
         pieces[1][5] = new King(true,new Position(1,5));
         pieces[8][4] = new Queen(false,new Position(8,4));
         pieces[8][5] = new King(false,new Position(8,4));
+
+        board = this;
     }
     
-    public List<Piece> getPiece(Piece piece){
-        return Arrays.stream(pieces).flatMap(x -> Arrays.stream(x)).filter(x -> x.toString().equals(piece.toString())).map(x -> (Piece) x).collect(Collectors.toList());
+    public static List<PieceImpl> getPiece(String piece){
+        List<PieceImpl> matches = new ArrayList<>();
+        for(int i = 1; i < 9; i ++){
+            for(int j = 1; j < 9; j ++){
+                if(pieces[i][j]!=null){
+                    if(pieces[i][j].toString().equals(piece)){
+                        matches.add(pieces[i][j]);
+                    }
+                }
+            }
+        }
+        return matches;
+        //return Arrays.stream(pieces).flatMap(x -> Arrays.stream(x)).filter(x -> x.toString().equals(piece)).collect(Collectors.toList());
     }
 
-    public Piece pieceAt(int row,int column){
+    public static PieceImpl pieceAt(int row,int column){
         return pieces[row][column];
     }
 

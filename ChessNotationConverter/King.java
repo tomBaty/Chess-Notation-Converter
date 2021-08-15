@@ -1,24 +1,7 @@
-public class King implements Piece{
-
-    private boolean white;
-    private Position pos;
-
-    public Position getPos() {
-        return pos;
-    }
-
-    public void setPos(Position pos) {
-        this.pos = pos;
-    }
+public class King extends PieceImpl{
 
     public King(boolean white,Position pos) {
-        this.white = white;
-        this.pos = pos;
-    }
-
-    @Override
-    public boolean isWhite() {
-        return white;
+        super(white,pos);
     }
 
     @Override
@@ -28,8 +11,12 @@ public class King implements Piece{
 
     @Override
     public boolean isValidMove(Position newPosition, Piece isTaken, Board board) {
-        // TODO Auto-generated method stub
-        return false;
+        int diffCol = Math.max(this.getPos().column, newPosition.column)
+				- Math.min(this.getPos().column, newPosition.column);
+		int diffRow = Math.max(this.getPos().row, newPosition.row)
+				- Math.min(this.getPos().row, newPosition.row);
+		return (diffCol == 1 && diffRow == 0) | (diffRow ==1 && diffCol == 0) |
+                (diffCol == 1 && diffRow == 1);
     }
     
 }
