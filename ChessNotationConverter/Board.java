@@ -1,7 +1,6 @@
-import java.util.Arrays;
+
 import java.util.List;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 public class Board {
 
@@ -33,6 +32,11 @@ public class Board {
         pieces[8][4] = new Queen(false,new Position(8,4));
         pieces[8][5] = new King(false,new Position(8,4));
 
+        for(int i = 0; i < 8; i ++){
+            pieces[2][i] = new Pawn(true,new Position(2,i));
+            pieces[7][i] = new Pawn(false,new Position(7,i));
+        }
+
         board = this;
     }
     
@@ -48,7 +52,7 @@ public class Board {
             }
         }
         return matches;
-        //return Arrays.stream(pieces).flatMap(x -> Arrays.stream(x)).filter(x -> x.toString().equals(piece)).collect(Collectors.toList());
+        // return Arrays.stream(pieces).flatMap(x -> Arrays.stream(x)).filter(x -> x.toString().equals(piece)).collect(Collectors.toList());
     }
 
     public static PieceImpl pieceAt(int row,int column){

@@ -12,10 +12,10 @@ public class Knight extends PieceImpl{
     @Override
     public boolean isValidMove(Position newPosition, Piece isTaken, Board board) {
         // Code taken from SWEN221 project, author DJP
-        int diffCol = Math.max(this.getPos().column, newPosition.column)
-				- Math.min(this.getPos().column, newPosition.column);
-		int diffRow = Math.max(this.getPos().row, newPosition.row)
-				- Math.min(this.getPos().row, newPosition.row);
+        int diffCol = Math.max(this.getPos().getColumn(), newPosition.getColumn())
+				- Math.min(this.getPos().getColumn(), newPosition.getColumn());
+		int diffRow = Math.max(this.getPos().getRow(), newPosition.getRow())
+				- Math.min(this.getPos().getRow(), newPosition.getRow());
 		return ((diffCol == 2 && diffRow == 1) || (diffCol == 1 && diffRow == 2));
     }
     

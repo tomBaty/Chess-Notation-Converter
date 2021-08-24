@@ -5,16 +5,18 @@ public class Chess{
     static String turnCount = "\\d+\\.";
     public static char[] columns = new char[]{'a','b','c','d','e','f','g','h'};
     public static StringBuilder output = new StringBuilder();
+    private static boolean whitesTurn = true;
 
     public static int charToColumn(char c){
         for(int i = 0; i < 8; i ++){
-            if(columns[i] == c) return i;
+            if(columns[i] == c) return i+1;
         }
         return -1;
     }
 
-    public static void convert(String input) throws Exception{
+    public static void convert(String input){
         Scanner s = new Scanner(input);
+        Board.board = new Board();
 
         /**
          * Example short notation game
@@ -38,12 +40,15 @@ public class Chess{
             String next = s.next();
             // turn each round into a pair of moves
             if(next.matches(turnCount)){
+                whitesTurn = true;
                 output.append(parseMove(s.next()));
-                output.append(parseMove(s.next()));
+                whitesTurn = false;
                 output.append(" ");
+                output.append(parseMove(s.next()));
+                output.append("\n");
             }else{
                 s.close();
-                throw new Exception("Bad input. Make sure to remove comments {} and brackets ().");
+                //throw new Exception("Bad input. Make sure to remove comments {} and brackets ().");
             }
         }
         s.close();
@@ -52,29 +57,51 @@ public class Chess{
     // convert short notation move to long
     public static String parseMove(String move){
 
+        System.out.println(move);
+
         if(move.contains("x")){
-            System.out.println("take");
-        }else{
-            if(move.contains("+")){
-                System.out.println("check");
-            }
-            // pawn move
-            if(move.length()==2){
-                System.out.println("pawn move");
-            }else{
-                System.out.println("move");
-                String piece = move.substring(0,1);
-                Position newPos = new Position(move.charAt(2),charToColumn(move.charAt(1)));
-                for(PieceImpl p : Board.getPiece(piece)){
-                    System.out.println("found a piece");
-                    if(p.isValidMove(newPos, null, Board.board)){
-                        return piece+p.getStringPos()+"-"+newPos.getStringPos();
-                    }
+            move = move.replace("x", "");
+        }
+        if(move.contains("+")){
+            move = move.replace("+", "");
+        }
+        // pawn move
+        if(move.length()==2){
+            Position newPos = new Position(Integer.parseInt(move.substring(1,2)),charToColumn(move.charAt(0)));
+            for(PieceImpl p : Board.getPiece("P")){
+                if(whitesTurn != p.isWhite()) continue;
+                if(p.isValidMove(newPos, null, Board.board)){
+                    String oldPos = p.getStringPos();
+                    Board.pieces[newPos.getRow()][newPos.getColumn()] = p;
+                    p.setPos(newPos);
+                    Board.pieces[p.getPos().getRow()][p.getPos().getColumn()] = null;
+                    return oldPos+"-"+newPos.getStringPos();
                 }
             }
+        }else{ // piece move
+            System.out.println("attempting to parse " + move);
+            return parsePieceMove(move);
         }
 
         return "";
+    }
+
+    public static String parsePieceMove(String move){
+        
+        String piece = move.substring(0,1);
+        Position newPos = new Position(Integer.parseInt(move.substring(2,3)),charToColumn(move.charAt(1)));
+        System.out.println("attempting to parse " + newPos.toString());
+        for(PieceImpl p : Board.getPiece(piece)){
+            if(whitesTurn != p.isWhite()) continue;
+            if(p.isValidMove(newPos, null, Board.board)){
+                String oldPos = p.getStringPos();
+                Board.pieces[newPos.getRow()][newPos.getColumn()] = p;
+                p.setPos(newPos);
+                Board.pieces[p.getPos().getRow()][p.getPos().getColumn()] = null;
+                return piece+oldPos+"-"+newPos.getStringPos();
+            }
+        }
+        return "uh oh " + move;
     }
 
     public static void main(String args[]){

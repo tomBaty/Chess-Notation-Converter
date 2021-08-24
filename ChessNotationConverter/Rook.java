@@ -11,7 +11,7 @@ public class Rook extends PieceImpl{
 
     @Override
     public boolean isValidMove(Position newPosition, Piece isTaken, Board board) {
-        return this.getPos().row == newPosition.row | this.getPos().column == newPosition.column;
+        return this.getPos().getRow() == newPosition.getRow() | this.getPos().getColumn() == newPosition.getColumn();
     }
     
 }

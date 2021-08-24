@@ -16,20 +16,23 @@ public abstract class PieceImpl implements Piece{
     }
     public String getStringPos(){
         StringBuilder p = new StringBuilder();
-        p.append(Chess.columns[pos.column]);
-        p.append(pos.row);
+        p.append(Chess.columns[pos.getColumn()-1]);
+        p.append(pos.getRow());
         return p.toString();
     }
 
     public boolean diagonal(Position newPos){
-        int startCol = pos.column;
-		int endCol = newPos.column;
-		int startRow = pos.row;
-		int endRow = newPos.row;
-		int diffCol = Math.max(startCol,endCol) - Math.min(startCol,endCol);
-		int diffRow = Math.max(startRow,endRow) - Math.min(startRow,endRow);
+        int startCol = this.getPos().getColumn();
+		int endCol = newPos.getColumn();
+		int startRow = this.getPos().getRow();
+		int endRow = newPos.getRow();
+		int diffCol = Math.abs(startCol-endCol);
+		int diffRow = Math.abs(startRow-endRow);
+
+        System.out.println(diffCol + " " + diffRow);
 
 		if(diffCol != diffRow || diffCol == 0) {
+            System.out.println("bad diag");
 			return false;
 		}
         return true;
