@@ -29,10 +29,7 @@ public abstract class PieceImpl implements Piece{
 		int diffCol = Math.abs(startCol-endCol);
 		int diffRow = Math.abs(startRow-endRow);
 
-        System.out.println(diffCol + " " + diffRow);
-
 		if(diffCol != diffRow || diffCol == 0) {
-            System.out.println("bad diag");
 			return false;
 		}
         return true;

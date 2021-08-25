@@ -10,7 +10,7 @@ public class Bishop extends PieceImpl{
     }
 
     @Override
-    public boolean isValidMove(Position newPosition, Piece isTaken, Board board) {
+    public boolean isValidMove(Position newPosition, boolean takes, Board board) {
         return this.diagonal(newPosition);
     }
     

@@ -25,10 +25,15 @@ public class GUI extends JFrame {
             }
         });
 
-        input = new JTextArea(5,5);
+        input = new JTextArea(20,5);
         input.setLineWrap(true);
-        output = new JTextArea(5,5);
+        input.setWrapStyleWord(true);
+        JScrollPane inputPane = new JScrollPane(input);
+
+        output = new JTextArea(20,5);
         output.setLineWrap(true);
+        output.setWrapStyleWord(true);
+        JScrollPane outputPane = new JScrollPane(output);
 
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.HORIZONTAL;
@@ -38,25 +43,26 @@ public class GUI extends JFrame {
         mode = new JComboBox<String>();
         mode.addItem("Long format");
         mode.addItem("Code string");
-        mode.addItem("Code string and board");
+        mode.addItem("Code string and board string");
+        mode.addItem("Board");
 
         c.gridx = 1; c.gridy = 0;
         c.ipady = 80; c.weightx = 1.5;
         input.setMaximumSize(input.getPreferredSize());
-        add(input,c);
+        add(inputPane,c);
 
-        c.gridy = 2;
-        add(output,c);
+        c.gridx = 2;
+        add(outputPane,c);
 
         c.ipady = 20; c.weightx = 1;
         c.gridx = 3; 
         c.gridy = 0; 
-        add(pasteGame,c);
+        // add(pasteGame,c);
         
-        c.gridy = 1;
+        c.gridy = 0;
         add(mode,c);
 
-        c.gridy = 2;
+        c.gridy = 1;
         add(convert,c);
 
         setVisible(true);

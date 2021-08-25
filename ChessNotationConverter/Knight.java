@@ -10,8 +10,7 @@ public class Knight extends PieceImpl{
     }
 
     @Override
-    public boolean isValidMove(Position newPosition, Piece isTaken, Board board) {
-        // Code taken from SWEN221 project, author DJP
+    public boolean isValidMove(Position newPosition, boolean takes, Board board) {
         int diffCol = Math.max(this.getPos().getColumn(), newPosition.getColumn())
 				- Math.min(this.getPos().getColumn(), newPosition.getColumn());
 		int diffRow = Math.max(this.getPos().getRow(), newPosition.getRow())

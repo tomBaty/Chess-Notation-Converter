@@ -4,8 +4,9 @@ public class Chess{
 
     static String turnCount = "\\d+\\.";
     public static char[] columns = new char[]{'a','b','c','d','e','f','g','h'};
-    public static StringBuilder output = new StringBuilder();
+    public static StringBuilder output;
     private static boolean whitesTurn = true;
+    private static Board board;
 
     public static int charToColumn(char c){
         for(int i = 0; i < 8; i ++){
@@ -15,8 +16,9 @@ public class Chess{
     }
 
     public static void convert(String input){
+        output = new StringBuilder();
         Scanner s = new Scanner(input);
-        Board.board = new Board();
+        board = new Board();
 
         /**
          * Example short notation game
@@ -42,66 +44,127 @@ public class Chess{
             if(next.matches(turnCount)){
                 whitesTurn = true;
                 output.append(parseMove(s.next()));
+                System.out.println(board.toString());
                 whitesTurn = false;
                 output.append(" ");
+                if(!s.hasNext()) break;
                 output.append(parseMove(s.next()));
+                System.out.println(board.toString());
                 output.append("\n");
+                
             }else{
+                if(next.matches("\\d-\\d") || next.equals("1/2-1/2")) break;
+                System.out.println("Parse error");
                 s.close();
-                //throw new Exception("Bad input. Make sure to remove comments {} and brackets ().");
             }
         }
+        
         s.close();
+        System.out.println(board.toString());
     }
 
     // convert short notation move to long
     public static String parseMove(String move){
 
+        boolean tookThisTurn = false;
+
         System.out.println(move);
 
+        // end game
+        if(move.matches("\\d-\\d") || move.equals("1/2-1/2")){
+            return "";
+        }
+
+        // take 
         if(move.contains("x")){
             move = move.replace("x", "");
-        }
+            tookThisTurn = true;
+        } // check
         if(move.contains("+")){
             move = move.replace("+", "");
+        } // castle
+        if(move.contains("O")){
+            int r = whitesTurn ? 1 : 8;
+            // short castle
+            if(move.equals("O-O")){
+                board.pieces[r][7] = new King(whitesTurn,new Position(r,7));
+                board.pieces[r][5] = null;
+                board.pieces[r][8] = null;
+                board.pieces[r][6] = new Rook(whitesTurn,new Position(r,6));
+            }else{ // long castle
+                board.pieces[r][3] = new King(whitesTurn,new Position(r,3));
+                board.pieces[r][5] = null;
+                board.pieces[r][1] = null;
+                board.pieces[r][4] = new Rook(whitesTurn,new Position(r,4));
+            }
+            return move;
         }
         // pawn move
-        if(move.length()==2){
-            Position newPos = new Position(Integer.parseInt(move.substring(1,2)),charToColumn(move.charAt(0)));
-            for(PieceImpl p : Board.getPiece("P")){
+        if(!move.substring(0,1).matches("[NQRKB]")){
+            
+            Position newPos = tookThisTurn ? new Position(Integer.parseInt(move.substring(2,3)),charToColumn(move.charAt(1))) :
+                                             new Position(Integer.parseInt(move.substring(1,2)),charToColumn(move.charAt(0)));
+            int pieceColumn = tookThisTurn ? charToColumn(move.substring(0,1).charAt(0)) :
+                                             0;
+            for(PieceImpl p : board.getPiece("P")){
                 if(whitesTurn != p.isWhite()) continue;
-                if(p.isValidMove(newPos, null, Board.board)){
+                if(pieceColumn!=0 && p.getPos().getColumn() != pieceColumn) continue;
+                if(p.isValidMove(newPos, tookThisTurn, board)){
                     String oldPos = p.getStringPos();
-                    Board.pieces[newPos.getRow()][newPos.getColumn()] = p;
+                    
+                    // set pawn to new position
+                    board.pieces[newPos.getRow()][newPos.getColumn()] = p;
+                    board.pieces[p.getPos().getRow()][p.getPos().getColumn()] = null;
                     p.setPos(newPos);
-                    Board.pieces[p.getPos().getRow()][p.getPos().getColumn()] = null;
-                    return oldPos+"-"+newPos.getStringPos();
+                    String divider = tookThisTurn ? "x" : "-";
+                    Pawn p1 = (Pawn) p; p1.movedYet = true;
+                    return oldPos+divider+newPos.getStringPos();
                 }
             }
         }else{ // piece move
-            System.out.println("attempting to parse " + move);
-            return parsePieceMove(move);
+            
+            return parsePieceMove(move,tookThisTurn);
         }
 
-        return "";
+        System.out.println("failed to parse pawn move: " + move);
+        System.out.println(board.toString());
+        
+        return "badp";
     }
 
-    public static String parsePieceMove(String move){
-        
+    public static String parsePieceMove(String move,boolean took){
+
         String piece = move.substring(0,1);
-        Position newPos = new Position(Integer.parseInt(move.substring(2,3)),charToColumn(move.charAt(1)));
-        System.out.println("attempting to parse " + newPos.toString());
-        for(PieceImpl p : Board.getPiece(piece)){
-            if(whitesTurn != p.isWhite()) continue;
-            if(p.isValidMove(newPos, null, Board.board)){
+        Position newPos;
+        
+        int pieceColumn = 0;
+        // move possible from two different pieces
+        // eg. Nbd7 Knight on B column moves to d7
+        if(move.length()==4){
+            pieceColumn = charToColumn(move.substring(1,2).charAt(0));
+            newPos = new Position(Integer.parseInt(move.substring(3,4)),charToColumn(move.charAt(2)));
+        }else{
+            newPos = new Position(Integer.parseInt(move.substring(2,3)),charToColumn(move.charAt(1)));
+        }
+
+        for(PieceImpl p : board.getPiece(piece)){
+            // only check pieces for the colour whose turn it is
+            if((whitesTurn && !p.isWhite()) || !whitesTurn && p.isWhite()) continue;
+            // if the move is a four-char move, only check pieces in the specified column
+            if(pieceColumn!=0 && p.getPos().getColumn() != pieceColumn) continue;
+            if(p.isValidMove(newPos, false, board)){
                 String oldPos = p.getStringPos();
-                Board.pieces[newPos.getRow()][newPos.getColumn()] = p;
+                board.pieces[newPos.getRow()][newPos.getColumn()] = p;
+                board.pieces[p.getPos().getRow()][p.getPos().getColumn()] = null;
                 p.setPos(newPos);
-                Board.pieces[p.getPos().getRow()][p.getPos().getColumn()] = null;
-                return piece+oldPos+"-"+newPos.getStringPos();
+                String divider = took ? "x" : "-";
+                return piece+oldPos+divider+newPos.getStringPos();
             }
         }
-        return "uh oh " + move;
+        System.out.println("failed to parse piece move: " + move);
+        System.out.println(board.toString());
+        
+        return "badm";
     }
 
     public static void main(String args[]){

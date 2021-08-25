@@ -10,11 +10,9 @@ public class King extends PieceImpl{
     }
 
     @Override
-    public boolean isValidMove(Position newPosition, Piece isTaken, Board board) {
-        int diffCol = Math.max(this.getPos().getColumn(), newPosition.getColumn())
-				- Math.min(this.getPos().getColumn(), newPosition.getColumn());
-		int diffRow = Math.max(this.getPos().getRow(), newPosition.getRow())
-				- Math.min(this.getPos().getRow(), newPosition.getRow());
+    public boolean isValidMove(Position newPosition, boolean takes, Board board) {
+        int diffCol = Math.abs(this.getPos().getColumn() - newPosition.getColumn());
+		int diffRow = Math.abs(this.getPos().getRow() - newPosition.getRow());
 		return (diffCol == 1 && diffRow == 0) | (diffRow ==1 && diffCol == 0) |
                 (diffCol == 1 && diffRow == 1);
     }

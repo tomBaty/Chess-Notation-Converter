@@ -10,8 +10,7 @@ public class Queen extends PieceImpl{
     }
 
     @Override
-    public boolean isValidMove(Position newPosition, Piece isTaken, Board board) {
-        System.out.println(newPosition.toString() + " begets " + this.getPos().getRow());
+    public boolean isValidMove(Position newPosition, boolean takes, Board board) {
         return this.getPos().getRow() == newPosition.getRow() | this.getPos().getColumn() == newPosition.getColumn() | this.diagonal(newPosition);
     }
 }
