@@ -1,5 +1,9 @@
 {
     "java.project.sourcePaths": [
         "."
+    ],
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "c:\\Users\\Tom\\Desktop\\JavaProjects\\junit-platform-console-standalone-1.8.0-RC1.jar"
     ]
 }

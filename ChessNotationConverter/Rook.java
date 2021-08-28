@@ -12,14 +12,16 @@ public class Rook extends PieceImpl{
     @Override
     public boolean isValidMove(Position newPosition, boolean takes, Board board) {
         if(newPosition.getColumn() == this.getPos().getColumn()){
+            // check the column is empty between old pos and new pos
             for(int i = this.getPos().getRow()+1; i < newPosition.getRow(); i ++){
-                if(board.pieces[this.getPos().getColumn()][i] != null){
+                if(board.pieces[i][this.getPos().getColumn()] != null){
                     return false;
                 }
             }
         }else{
+            // check the row is empty between old pos and new pos
             for(int i = this.getPos().getColumn()+1; i < newPosition.getColumn(); i ++){
-                if(board.pieces[i][this.getPos().getRow()] != null){
+                if(board.pieces[this.getPos().getRow()][i] != null){
                     return false;
                 }
             }

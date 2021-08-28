@@ -78,5 +78,25 @@ public class Board {
         }
         return b.toString();
     }
+    public String toNeatString(){
+        StringBuilder b = new StringBuilder();
+        for(int i = 8; i > 0; i --){
+            b.append("\"");
+            for(int j = 1; j < 9; j ++){
+                b.append("|");
+                if(pieces[i][j] == null){
+                    b.append("_");
+                }else{
+                    Piece piece = pieces[i][j];
+                    String p = piece.isWhite() ? piece.toString() : piece.toString().toLowerCase();
+                    b.append(p);
+                }
+            }
+            b.append("|\\n\"+\n");
+        }
+        b.setCharAt(b.length()-2, ';');
+        // b.append(";");
+        return b.toString();
+    }
 
 }

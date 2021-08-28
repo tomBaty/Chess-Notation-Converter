@@ -6,7 +6,7 @@ public class Chess{
     public static char[] columns = new char[]{'a','b','c','d','e','f','g','h'};
     public static StringBuilder output;
     private static boolean whitesTurn = true;
-    private static Board board;
+    public static Board board;
 
     public static int charToColumn(char c){
         for(int i = 0; i < 8; i ++){
@@ -20,41 +20,21 @@ public class Chess{
         Scanner s = new Scanner(input);
         board = new Board();
 
-        /**
-         * Example short notation game
-         * 1. e4 e5 2. d4 c6 3. Bb5 cxb5 4. Qh5 g6 5. Qxe5+ Be7 6. Qxh8 Nc6 7. d5 Nb4 
-         * 8. Qxg8+ Bf8 9. Bh6 Qe7 10. Bxf8 Qxf8 11. Qxh7 Nxc2+ 12. Kf1 Nxa1 13. Nf3 b6 
-         * 14. Nc3 d6 15. Nxb5 Bg4 16. Nxd6+ Qxd6 17. e5 Qxd5 18. Qh8+ Ke7 19. Qxa8 Qxa8 
-         * 20. Ke2 Bxf3+ 21. gxf3 Qxf3+ 22. Kxf3 Nc2 23. Rc1 Ne3 24. Kxe3 Ke6 25. Rc6+ Kxe5 
-         * 26. Rxg6 f6 27. Rxf6 b5 28. Re6+ Kf5 29. Re4 Kg5 30. f4+ Kg4 
-         * 
-         * Info
-         * Where the piece ends - if it took a piece - if there is a check
-         * 
-         * Need something like this
-         * e2-e4 f7-f5\n Bf1-d3 Ke8-f7\n Ng1-f3 g7-g5\n Nf3-h4 f5xe4\n f2-f4
-			Kf7-f6\n f4-f5 g5xNh4\ng2-g3 Kf6xf5\nRh1-g1 Ng8-h6\nNb1-c3 Nb8-c6\nRa1-b1 Rh8-g8\nBd3-c4 Ra8-b8
-			a2-a3 h4xg3\na3-a4 g3xh2\na4-a5 h2-h1=R"
-         * 
-         */
-
         while(s.hasNext()){
             String next = s.next();
             // turn each round into a pair of moves
             if(next.matches(turnCount)){
                 whitesTurn = true;
                 output.append(parseMove(s.next()));
-                System.out.println(board.toString());
                 whitesTurn = false;
                 output.append(" ");
                 if(!s.hasNext()) break;
                 output.append(parseMove(s.next()));
-                System.out.println(board.toString());
                 output.append("\n");
                 
             }else{
                 if(next.matches("\\d-\\d") || next.equals("1/2-1/2")) break;
-                System.out.println("Parse error");
+                System.out.println("Syntax parse error");
                 s.close();
             }
         }
@@ -67,6 +47,7 @@ public class Chess{
     public static String parseMove(String move){
 
         boolean tookThisTurn = false;
+        String enPassantMade = "";
 
         System.out.println(move);
 
@@ -79,7 +60,10 @@ public class Chess{
         if(move.contains("x")){
             move = move.replace("x", "");
             tookThisTurn = true;
-        } // check
+        } //checkmate
+        if(move.contains("#")){
+            move = move.replace("#", "");
+        }// check
         if(move.contains("+")){
             move = move.replace("+", "");
         } // castle
@@ -98,9 +82,12 @@ public class Chess{
                 board.pieces[r][4] = new Rook(whitesTurn,new Position(r,4));
             }
             return move;
-        }
+        } // promotion
+        
         // pawn move
         if(!move.substring(0,1).matches("[NQRKB]")){
+
+            String promo = "";
             
             Position newPos = tookThisTurn ? new Position(Integer.parseInt(move.substring(2,3)),charToColumn(move.charAt(1))) :
                                              new Position(Integer.parseInt(move.substring(1,2)),charToColumn(move.charAt(0)));
@@ -111,14 +98,41 @@ public class Chess{
                 if(pieceColumn!=0 && p.getPos().getColumn() != pieceColumn) continue;
                 if(p.isValidMove(newPos, tookThisTurn, board)){
                     String oldPos = p.getStringPos();
+                    // check for en passant
+                    if(tookThisTurn && board.pieces[newPos.getRow()][newPos.getColumn()]==null){
+                        int epChange = whitesTurn ? -1 : 1;
+                        // send en-passanted pawn into the abyss
+                        board.pieces[newPos.getRow()+epChange][newPos.getColumn()] = null;
+                        enPassantMade = "ep";
+                    }
+                    // remove pawn from old position
+                    board.pieces[p.getPos().getRow()][p.getPos().getColumn()] = null;
                     
+                    // make promotions
+                    if(move.contains("=")){
+                        PieceImpl newPiece;
+                        switch(move.charAt(3)){
+                            case 'Q' -> newPiece = new Queen(p.isWhite(),p.getPos());
+                            case 'N' -> newPiece = new Knight(p.isWhite(),p.getPos());
+                            case 'R' -> newPiece = new Rook(p.isWhite(),p.getPos());
+                            case 'B' -> newPiece = new Bishop(p.isWhite(),p.getPos());
+                            default -> newPiece = p;
+                        }
+                        p = newPiece;
+                        promo = "=" + move.substring(3,4);
+                    }else{
+                        // set pawn moved (for calculating two-step moves)
+                        Pawn p1 = (Pawn) p; p1.movedYet = true;
+                    }
+
                     // set pawn to new position
                     board.pieces[newPos.getRow()][newPos.getColumn()] = p;
-                    board.pieces[p.getPos().getRow()][p.getPos().getColumn()] = null;
                     p.setPos(newPos);
+
+                    // set correct move formatting
                     String divider = tookThisTurn ? "x" : "-";
-                    Pawn p1 = (Pawn) p; p1.movedYet = true;
-                    return oldPos+divider+newPos.getStringPos();
+                    
+                    return oldPos+divider+newPos.getStringPos()+enPassantMade+promo;
                 }
             }
         }else{ // piece move
@@ -129,19 +143,28 @@ public class Chess{
         System.out.println("failed to parse pawn move: " + move);
         System.out.println(board.toString());
         
-        return "badp";
+        return "failed pawn move parse";
     }
-
     public static String parsePieceMove(String move,boolean took){
 
         String piece = move.substring(0,1);
         Position newPos;
         
-        int pieceColumn = 0;
+        // positive if unique column, negative if unique row
+        int uniqueColumn = 0;
+        int uniqueRow = 0;
         // move possible from two different pieces
         // eg. Nbd7 Knight on B column moves to d7
+        // eg. R1a3 Rook on first row moves to a3
         if(move.length()==4){
-            pieceColumn = charToColumn(move.substring(1,2).charAt(0));
+            char originalPosition = move.substring(1,2).charAt(0);
+            // if the starting position is a row
+            if(Character.isDigit(originalPosition)){
+                uniqueRow = Integer.parseInt(move.substring(1,2));
+            }else{
+                uniqueColumn = charToColumn(move.substring(1,2).charAt(0));
+                if(originalPosition=='a') System.out.println(uniqueColumn);
+            }
             newPos = new Position(Integer.parseInt(move.substring(3,4)),charToColumn(move.charAt(2)));
         }else{
             newPos = new Position(Integer.parseInt(move.substring(2,3)),charToColumn(move.charAt(1)));
@@ -150,8 +173,10 @@ public class Chess{
         for(PieceImpl p : board.getPiece(piece)){
             // only check pieces for the colour whose turn it is
             if((whitesTurn && !p.isWhite()) || !whitesTurn && p.isWhite()) continue;
-            // if the move is a four-char move, only check pieces in the specified column
-            if(pieceColumn!=0 && p.getPos().getColumn() != pieceColumn) continue;
+            // if the move is a four-char move, only check pieces in the specified column/row
+            System.out.println("col: " + p.getPos().getColumn());
+            if(uniqueColumn!=0 && p.getPos().getColumn() != uniqueColumn) continue;
+            if(uniqueRow!=0 && p.getPos().getRow() != uniqueRow) continue;
             if(p.isValidMove(newPos, false, board)){
                 String oldPos = p.getStringPos();
                 board.pieces[newPos.getRow()][newPos.getColumn()] = p;
@@ -164,9 +189,21 @@ public class Chess{
         System.out.println("failed to parse piece move: " + move);
         System.out.println(board.toString());
         
-        return "badm";
+        return "failed move parse";
     }
 
+    public static void longFormat(String inputText){
+        convert(inputText);
+        GUI.output.setText(Chess.output.toString());
+    }
+    public static void printBoard(String inputText){
+        convert(inputText);
+        GUI.output.setText(board.toString());
+    }
+    public static void printFormattedBoard(String inputText){
+        convert(inputText);
+        GUI.output.setText("String board =  " + board.toNeatString());
+    }
     public static void main(String args[]){
         new GUI();
     }
