@@ -14,6 +14,7 @@ public class Pawn extends PieceImpl{
     @Override
     public boolean isValidMove(Position newPosition, boolean takes, Board board) {
         int reach = movedYet ? 1 : 2;
+        if(reach == 2 && board.pieceAt(this.getPos().getRow(),this.getPos().getColumn()) == null) reach = 0;
         int rowDiff = this.getPos().getRow()-newPosition.getRow();
         if(!takes){
             return this.getPos().getColumn() == newPosition.getColumn() && Math.abs(rowDiff) <= reach && (this.isWhite() ? rowDiff < 0 : rowDiff > 0);

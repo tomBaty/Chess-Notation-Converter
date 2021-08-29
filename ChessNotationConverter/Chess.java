@@ -40,7 +40,6 @@ public class Chess{
         }
         
         s.close();
-        System.out.println(board.toString());
     }
 
     // convert short notation move to long
@@ -48,8 +47,8 @@ public class Chess{
 
         boolean tookThisTurn = false;
         String enPassantMade = "";
-
-        System.out.println(move);
+        boolean check = false;
+        boolean mate = false;
 
         // end game
         if(move.matches("\\d-\\d") || move.equals("1/2-1/2")){
@@ -63,9 +62,11 @@ public class Chess{
         } //checkmate
         if(move.contains("#")){
             move = move.replace("#", "");
+            mate = true;
         }// check
         if(move.contains("+")){
             move = move.replace("+", "");
+            check = true;
         } // castle
         if(move.contains("O")){
             int r = whitesTurn ? 1 : 8;
@@ -98,13 +99,20 @@ public class Chess{
                 if(pieceColumn!=0 && p.getPos().getColumn() != pieceColumn) continue;
                 if(p.isValidMove(newPos, tookThisTurn, board)){
                     String oldPos = p.getStringPos();
+                    String divider = "";
                     // check for en passant
                     if(tookThisTurn && board.pieces[newPos.getRow()][newPos.getColumn()]==null){
                         int epChange = whitesTurn ? -1 : 1;
                         // send en-passanted pawn into the abyss
                         board.pieces[newPos.getRow()+epChange][newPos.getColumn()] = null;
                         enPassantMade = "ep";
+                        divider = "x";
                     }
+                    if(enPassantMade.equals("")){
+                        divider = tookThisTurn ? "x"+board.pieces[newPos.getRow()][newPos.getColumn()].toString() : "-";
+                    }
+                    
+                    if(divider.equals("xP")) divider = "x";
                     // remove pawn from old position
                     board.pieces[p.getPos().getRow()][p.getPos().getColumn()] = null;
                     
@@ -130,14 +138,15 @@ public class Chess{
                     p.setPos(newPos);
 
                     // set correct move formatting
-                    String divider = tookThisTurn ? "x" : "-";
+                    String c = check ? "+" : "";
+                    c = mate ? "#" : c;
                     
-                    return oldPos+divider+newPos.getStringPos()+enPassantMade+promo;
+                    return oldPos+divider+newPos.getStringPos()+enPassantMade+promo+c;
                 }
             }
         }else{ // piece move
             
-            return parsePieceMove(move,tookThisTurn);
+            return parsePieceMove(move,tookThisTurn,check,mate);
         }
 
         System.out.println("failed to parse pawn move: " + move);
@@ -145,12 +154,11 @@ public class Chess{
         
         return "failed pawn move parse";
     }
-    public static String parsePieceMove(String move,boolean took){
+    public static String parsePieceMove(String move,boolean took,boolean check,boolean mate){
 
         String piece = move.substring(0,1);
         Position newPos;
         
-        // positive if unique column, negative if unique row
         int uniqueColumn = 0;
         int uniqueRow = 0;
         // move possible from two different pieces
@@ -163,7 +171,6 @@ public class Chess{
                 uniqueRow = Integer.parseInt(move.substring(1,2));
             }else{
                 uniqueColumn = charToColumn(move.substring(1,2).charAt(0));
-                if(originalPosition=='a') System.out.println(uniqueColumn);
             }
             newPos = new Position(Integer.parseInt(move.substring(3,4)),charToColumn(move.charAt(2)));
         }else{
@@ -174,16 +181,19 @@ public class Chess{
             // only check pieces for the colour whose turn it is
             if((whitesTurn && !p.isWhite()) || !whitesTurn && p.isWhite()) continue;
             // if the move is a four-char move, only check pieces in the specified column/row
-            System.out.println("col: " + p.getPos().getColumn());
+
             if(uniqueColumn!=0 && p.getPos().getColumn() != uniqueColumn) continue;
             if(uniqueRow!=0 && p.getPos().getRow() != uniqueRow) continue;
             if(p.isValidMove(newPos, false, board)){
                 String oldPos = p.getStringPos();
+                String divider = took ? "x"+board.pieces[newPos.getRow()][newPos.getColumn()].toString() : "-";
+                if(divider.equals("xP")) divider = "x";
                 board.pieces[newPos.getRow()][newPos.getColumn()] = p;
                 board.pieces[p.getPos().getRow()][p.getPos().getColumn()] = null;
                 p.setPos(newPos);
-                String divider = took ? "x" : "-";
-                return piece+oldPos+divider+newPos.getStringPos();
+                String c = check ? "+" : "";
+                        c = mate ? "#" : c;
+                return piece+oldPos+divider+newPos.getStringPos()+c;
             }
         }
         System.out.println("failed to parse piece move: " + move);
@@ -192,6 +202,7 @@ public class Chess{
         return "failed move parse";
     }
 
+    // methods for different combobox modes
     public static void longFormat(String inputText){
         convert(inputText);
         GUI.output.setText(Chess.output.toString());
@@ -203,6 +214,28 @@ public class Chess{
     public static void printFormattedBoard(String inputText){
         convert(inputText);
         GUI.output.setText("String board =  " + board.toNeatString());
+    }
+    public static void stringLongFormat(String inputText){
+        convert(inputText);
+        StringBuilder printout = new StringBuilder();
+        printout.append("String input = ");
+        Scanner s = new Scanner(output.toString());
+        while(s.hasNext()){
+            printout.append("\"");
+            int i = 0;
+            while(i < 5 || !s.hasNext()){
+                if(!s.hasNext()) break;
+                printout.append(s.next());
+                if(!s.hasNext()) break;
+                printout.append(" " + s.next()+"\\n");
+                i++;
+            }
+            printout.append("\"+\n");
+        }
+        s.close();
+        printout.append("\"\";\n");
+        printout.append("String board =  " + board.toNeatString());
+        GUI.output.setText(printout.toString());
     }
     public static void main(String args[]){
         new GUI();

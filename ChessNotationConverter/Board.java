@@ -81,7 +81,7 @@ public class Board {
     public String toNeatString(){
         StringBuilder b = new StringBuilder();
         for(int i = 8; i > 0; i --){
-            b.append("\"");
+            b.append("\"" + i);
             for(int j = 1; j < 9; j ++){
                 b.append("|");
                 if(pieces[i][j] == null){
@@ -94,7 +94,7 @@ public class Board {
             }
             b.append("|\\n\"+\n");
         }
-        b.setCharAt(b.length()-2, ';');
+        b.append("\"  a b c d e f g h\";");
         // b.append(";");
         return b.toString();
     }

@@ -26,6 +26,7 @@ public class GUI extends JFrame {
                     case "Long Format" -> Chess.longFormat(input.getText());
                     case "Board" -> Chess.printBoard(input.getText());
                     case "Board String" -> Chess.printFormattedBoard(input.getText());
+                    case "Code String" -> Chess.stringLongFormat(input.getText());
                 }
             }
         });
@@ -46,7 +47,6 @@ public class GUI extends JFrame {
         c.fill = GridBagConstraints.HORIZONTAL;
         c.insets = new Insets(0,20,0,10);
 
-        pasteGame = new JLabel("Paste moves in short notation (eg. 1. e4 e5).");
         mode = new JComboBox<String>();
         mode.addItem("Long Format");
         mode.addItem("Code String and Board String");
@@ -64,8 +64,6 @@ public class GUI extends JFrame {
 
         c.ipady = 20; c.weightx = 1;
         c.gridx = 3; 
-        c.gridy = 0; 
-        // add(pasteGame,c);
         
         c.gridy = 0;
         add(mode,c);
