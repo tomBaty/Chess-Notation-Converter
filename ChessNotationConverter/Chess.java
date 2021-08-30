@@ -213,7 +213,7 @@ public class Chess{
     }
     public static void printFormattedBoard(String inputText){
         convert(inputText);
-        GUI.output.setText("String board =  " + board.toNeatString());
+        GUI.output.setText(board.toNeatString());
     }
     public static void stringLongFormat(String inputText){
         convert(inputText);
@@ -234,7 +234,29 @@ public class Chess{
         }
         s.close();
         printout.append("\"\";\n");
-        printout.append("String board =  " + board.toNeatString());
+        GUI.output.setText(printout.toString());
+    }
+    public static void testContents(String inputText){
+        convert(inputText);
+        StringBuilder printout = new StringBuilder();
+        printout.append("String input = ");
+        Scanner s = new Scanner(output.toString());
+        while(s.hasNext()){
+            printout.append("\"");
+            int i = 0;
+            while(i < 5 || !s.hasNext()){
+                if(!s.hasNext()) break;
+                printout.append(s.next());
+                if(!s.hasNext()) break;
+                printout.append(" " + s.next()+"\\n");
+                i++;
+            }
+            printout.append("\"+\n");
+        }
+        s.close();
+        printout.append("\"\";\n");
+        printout.append(board.toNeatString());
+        printout.append("\ncheck(input,board);");
         GUI.output.setText(printout.toString());
     }
     public static void main(String args[]){

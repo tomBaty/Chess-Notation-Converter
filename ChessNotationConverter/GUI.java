@@ -27,6 +27,7 @@ public class GUI extends JFrame {
                     case "Board" -> Chess.printBoard(input.getText());
                     case "Board String" -> Chess.printFormattedBoard(input.getText());
                     case "Code String" -> Chess.stringLongFormat(input.getText());
+                    case "Test Contents" -> Chess.testContents(input.getText());
                 }
             }
         });
@@ -49,7 +50,7 @@ public class GUI extends JFrame {
 
         mode = new JComboBox<String>();
         mode.addItem("Long Format");
-        mode.addItem("Code String and Board String");
+        mode.addItem("Test Contents");
         mode.addItem("Code String");
         mode.addItem("Board");
         mode.addItem("Board String");
@@ -68,7 +69,7 @@ public class GUI extends JFrame {
         c.gridy = 0;
         add(mode,c);
 
-        c.gridy = 1;
+        c.gridy = -1;
         add(convert,c);
 
         setVisible(true);
