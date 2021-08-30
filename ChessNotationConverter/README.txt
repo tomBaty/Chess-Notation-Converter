@@ -27,6 +27,10 @@ standard notation for chess games. I would suggest sites like:
     }
     and copy paste the contents of the tool's output pane into the test.
 
+TO START THE TOOL:
+1. Navigate to where you have downloaded the jar in console
+2. Run the command "java -jar --enable-preview ChessNotationConverter.jar"
+3. If the tool doesn't launch, make sure you have the latest version of java
 
 
 
