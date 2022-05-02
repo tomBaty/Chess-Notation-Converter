@@ -1,3 +1,4 @@
+package src;
 public class Queen extends PieceImpl{
 
     public Queen(boolean white,Position pos) {

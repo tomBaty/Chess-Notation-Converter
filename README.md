@@ -1,10 +1,8 @@
-This is a tool created to help out SWEN221 students with the Chess assignment.
-When I was doing the assignment, I found myself spending hours and hours writing
-out chess moves by hand and creating text based boards just to reach the 100 tests
-requirement. 
-This seemed incredibly unproductive and far more time-consuming than any other part
-of the assignment, and so that future students don't have to go through what I went through, 
-I've made a tool that can automate the annoying parts of the test creation process.
+Tool made for more efficiently creating tests for the swen221 chess assignment. In my opinion, you won't learn anything from spending
+hours hand editing chess notation that you wouldn't learn from making one, so why not make the 100 tests requirement a little easier.
+
+NOTE:
+Wrote most of this code in second year, so there may be bugs. I've tested fairly thoroughly and haven't found any, but keep it in mind.
 
 HOW TO USE:
 
@@ -20,22 +18,16 @@ standard notation for chess games. I would suggest sites like:
    if they are not clearly distinct from turn counts.
    Also, some games may have a header ([Event "Aimchess US Rapid Prelim"]...), or comments inside the game. Do not include these, only moves.
 3. Copy PGN into left-hand input box in the program.
-4. Select appropriate format needed- use 'Test Contents' to get a fully generated test.
-5. Create a new test shell in you Chess tests file : eg
+4. Create a new test shell in you Chess tests file : eg
     @Test public void knightPromotion(){
 
     }
     and copy paste the contents of the tool's output pane into the test.
 
 TO START THE TOOL:
-1. Navigate to where you have downloaded the jar in console
-2. Run the command "java -jar --enable-preview ChessNotationConverter.jar"
-3. If the tool doesn't launch, make sure you have the latest version of java
+1. Run the jar file. Might need latest java.
 
-
-
-
-@ Tom Baty 2021
+- Tom
 
 
 

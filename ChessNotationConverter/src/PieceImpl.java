@@ -1,3 +1,4 @@
+package src;
 public abstract class PieceImpl implements Piece{
 
     private Position pos;
@@ -29,10 +30,8 @@ public abstract class PieceImpl implements Piece{
 		int diffCol = Math.abs(startCol-endCol);
 		int diffRow = Math.abs(startRow-endRow);
 
-		if(diffCol != diffRow || diffCol == 0) {
-			return false;
-		}
-        return true;
+        return diffCol == diffRow;
+
     }
     
     public PieceImpl(boolean white, Position pos){

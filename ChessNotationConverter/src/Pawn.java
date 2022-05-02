@@ -1,3 +1,4 @@
+package src;
 public class Pawn extends PieceImpl{
 
     public Pawn(boolean white,Position pos) {

@@ -1,3 +1,4 @@
+package src;
 public interface Piece {
 
 	public boolean isWhite();

@@ -1,3 +1,4 @@
+package src;
 public class Knight extends PieceImpl{
 
     public Knight(boolean white,Position pos) {

@@ -1,3 +1,4 @@
+package src;
 public class Rook extends PieceImpl{
 
     public Rook(boolean white,Position pos) {

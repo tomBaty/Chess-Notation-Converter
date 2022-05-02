@@ -1,3 +1,4 @@
+package src;
 
 import java.util.Scanner;
 public class Chess{
@@ -203,39 +204,6 @@ public class Chess{
     }
 
     // methods for different combobox modes
-    public static void longFormat(String inputText){
-        convert(inputText);
-        GUI.output.setText(Chess.output.toString());
-    }
-    public static void printBoard(String inputText){
-        convert(inputText);
-        GUI.output.setText(board.toString());
-    }
-    public static void printFormattedBoard(String inputText){
-        convert(inputText);
-        GUI.output.setText(board.toNeatString());
-    }
-    public static void stringLongFormat(String inputText){
-        convert(inputText);
-        StringBuilder printout = new StringBuilder();
-        printout.append("String input = ");
-        Scanner s = new Scanner(output.toString());
-        while(s.hasNext()){
-            printout.append("\"");
-            int i = 0;
-            while(i < 5 || !s.hasNext()){
-                if(!s.hasNext()) break;
-                printout.append(s.next());
-                if(!s.hasNext()) break;
-                printout.append(" " + s.next()+"\\n");
-                i++;
-            }
-            printout.append("\"+\n");
-        }
-        s.close();
-        printout.append("\"\";\n");
-        GUI.output.setText(printout.toString());
-    }
     public static void testContents(String inputText){
         convert(inputText);
         StringBuilder printout = new StringBuilder();

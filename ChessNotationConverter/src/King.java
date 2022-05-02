@@ -1,3 +1,4 @@
+package src;
 public class King extends PieceImpl{
 
     public King(boolean white,Position pos) {

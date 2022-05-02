@@ -1,3 +1,4 @@
+package src;
 
 import javax.swing.*;
 import java.awt.GridBagLayout;
@@ -22,13 +23,7 @@ public class GUI extends JFrame {
         convert = new JButton("Convert");
         convert.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                switch(mode.getSelectedItem().toString()){
-                    case "Long Format" -> Chess.longFormat(input.getText());
-                    case "Board" -> Chess.printBoard(input.getText());
-                    case "Board String" -> Chess.printFormattedBoard(input.getText());
-                    case "Code String" -> Chess.stringLongFormat(input.getText());
-                    case "Test Contents" -> Chess.testContents(input.getText());
-                }
+                Chess.testContents(input.getText());
             }
         });
 
@@ -48,13 +43,6 @@ public class GUI extends JFrame {
         c.fill = GridBagConstraints.HORIZONTAL;
         c.insets = new Insets(0,20,0,10);
 
-        mode = new JComboBox<String>();
-        mode.addItem("Long Format");
-        mode.addItem("Test Contents");
-        mode.addItem("Code String");
-        mode.addItem("Board");
-        mode.addItem("Board String");
-
         c.gridx = 1; c.gridy = 0;
         c.ipady = 80; c.weightx = 1.5;
         input.setMaximumSize(input.getPreferredSize());
@@ -67,7 +55,6 @@ public class GUI extends JFrame {
         c.gridx = 3; 
         
         c.gridy = 0;
-        add(mode,c);
 
         c.gridy = -1;
         add(convert,c);

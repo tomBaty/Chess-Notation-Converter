@@ -1,3 +1,4 @@
+package src;
 public class Position {
 
     private int row;

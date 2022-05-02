@@ -1,3 +1,5 @@
+package src;
+
 public class Bishop extends PieceImpl{
 
     public Bishop(boolean white,Position pos) {
