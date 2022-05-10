@@ -54,6 +54,23 @@ public class Chess{
         // end game
         if(move.matches("\\d-\\d") || move.equals("1/2-1/2")){
             return "";
+        }// castle
+        if(move.contains("O")){
+            int r = whitesTurn ? 1 : 8;
+            // short castle
+            if(move.equals("O-O")){
+                board.pieces[r][7] = new King(whitesTurn,new Position(r,7));
+                board.pieces[r][5] = null;
+                board.pieces[r][8] = null;
+                board.pieces[r][6] = new Rook(whitesTurn,new Position(r,6));
+            }else{ 
+                // long castle
+                board.pieces[r][3] = new King(whitesTurn,new Position(r,3));
+                board.pieces[r][5] = null;
+                board.pieces[r][1] = null;
+                board.pieces[r][4] = new Rook(whitesTurn,new Position(r,4));
+            }
+            return move;
         }
 
         // take 
@@ -68,23 +85,7 @@ public class Chess{
         if(move.contains("+")){
             move = move.replace("+", "");
             check = true;
-        } // castle
-        if(move.contains("O")){
-            int r = whitesTurn ? 1 : 8;
-            // short castle
-            if(move.equals("O-O")){
-                board.pieces[r][7] = new King(whitesTurn,new Position(r,7));
-                board.pieces[r][5] = null;
-                board.pieces[r][8] = null;
-                board.pieces[r][6] = new Rook(whitesTurn,new Position(r,6));
-            }else{ // long castle
-                board.pieces[r][3] = new King(whitesTurn,new Position(r,3));
-                board.pieces[r][5] = null;
-                board.pieces[r][1] = null;
-                board.pieces[r][4] = new Rook(whitesTurn,new Position(r,4));
-            }
-            return move;
-        } // promotion
+        } 
         
         // pawn move
         if(!move.substring(0,1).matches("[NQRKB]")){
@@ -96,12 +97,14 @@ public class Chess{
             int pieceColumn = tookThisTurn ? charToColumn(move.substring(0,1).charAt(0)) :
                                              0;
             for(PieceImpl p : board.getPiece("P")){
+                // scan through all pawns on the board to see if they can make this move
                 if(whitesTurn != p.isWhite()) continue;
                 if(pieceColumn!=0 && p.getPos().getColumn() != pieceColumn) continue;
                 if(p.isValidMove(newPos, tookThisTurn, board)){
                     String oldPos = p.getStringPos();
                     String divider = "";
-                    // check for en passant
+
+                    // en passant
                     if(tookThisTurn && board.pieces[newPos.getRow()][newPos.getColumn()]==null){
                         int epChange = whitesTurn ? -1 : 1;
                         // send en-passanted pawn into the abyss
@@ -109,18 +112,23 @@ public class Chess{
                         enPassantMade = "ep";
                         divider = "x";
                     }
+                    // no en passant was made, if there was a piece taken use x and if not use -
                     if(enPassantMade.equals("")){
                         divider = tookThisTurn ? "x"+board.pieces[newPos.getRow()][newPos.getColumn()].toString() : "-";
                     }
                     
+                    // if the pawn took another pawn, no need to include P
                     if(divider.equals("xP")) divider = "x";
+
                     // remove pawn from old position
                     board.pieces[p.getPos().getRow()][p.getPos().getColumn()] = null;
                     
                     // make promotions
                     if(move.contains("=")){
                         PieceImpl newPiece;
-                        switch(move.charAt(3)){
+                        System.out.println(move);
+                        char promoPiece = tookThisTurn ? move.charAt(4) : move.charAt(3);
+                        switch(promoPiece){
                             case 'Q' -> newPiece = new Queen(p.isWhite(),p.getPos());
                             case 'N' -> newPiece = new Knight(p.isWhite(),p.getPos());
                             case 'R' -> newPiece = new Rook(p.isWhite(),p.getPos());
@@ -128,7 +136,7 @@ public class Chess{
                             default -> newPiece = p;
                         }
                         p = newPiece;
-                        promo = "=" + move.substring(3,4);
+                        promo = "=" + promoPiece;
                     }else{
                         // set pawn moved (for calculating two-step moves)
                         Pawn p1 = (Pawn) p; p1.movedYet = true;
@@ -146,7 +154,6 @@ public class Chess{
                 }
             }
         }else{ // piece move
-            
             return parsePieceMove(move,tookThisTurn,check,mate);
         }
 

@@ -81,7 +81,7 @@ public class Board {
     }
     public String toNeatString(){
         StringBuilder b = new StringBuilder();
-        b.append("String board =  ");
+        b.append("String board =  \n");
         for(int i = 8; i > 0; i --){
             b.append("\"" + i);
             for(int j = 1; j < 9; j ++){
